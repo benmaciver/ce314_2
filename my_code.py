@@ -94,12 +94,13 @@ for x in range (len(training_data)):
     y_train.append(training_data[x][-1])
 
 x_train_tfidf = TfidfVectorizer().fit_transform(x_train)
+x_test_tfidf = TfidfVectorizer().fit_transform(x_test)
 
 model = MultinomialNB()
-model.fit(X_train_tfidf, y_train)
+model.fit(x_train_tfidf, y_train)
 
 
-y_pred = model.predict(X_test_tfidf)
+y_pred = model.predict(x_test_tfidf)
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
 
