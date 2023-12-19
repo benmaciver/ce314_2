@@ -90,11 +90,19 @@ for x in range (len(test_data)):
 x_train = []
 y_train = []
 for x in range (len(training_data)):
-    x_train.append(training_data[x][:])
+    x_train.append(training_data[x][0])
     y_train.append(training_data[x][-1])
 
-x_train_tfidf = TfidfVectorizer().fit_transform(x_train)
-x_test_tfidf = TfidfVectorizer().fit_transform(x_test)
+# Assuming each inner list contains a single string
+x_test = [' '.join(x) for x in test_data]
+y_test = [x[-1] for x in test_data]
+
+x_train = [' '.join(x) for x in training_data]
+y_train = [x[-1] for x in training_data]
+
+vectorizer = TfidfVectorizer()
+x_train_tfidf = vectorizer.fit_transform(x_train)
+x_test_tfidf = vectorizer.transform(x_test)
 
 model = MultinomialNB()
 model.fit(x_train_tfidf, y_train)
