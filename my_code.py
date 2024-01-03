@@ -1,12 +1,34 @@
 import csv
 import nltk
+import matplotlib.pyplot as plt
+import numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from collections import Counter
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score
+
+def compare_arrays(arr1, arr2,title):
+    if len(arr1) != len(arr2):
+        raise ValueError("Arrays must have the same length")
+
+    match_count = 0
+    mismatch_count = 0
+
+    for val1, val2 in zip(arr1, arr2):
+        if val1 == val2:
+            match_count += 1
+        else:
+            mismatch_count += 1
+
+    labels = ['Match', 'Mismatch']
+    values = [match_count, mismatch_count]
+
+    plt.bar(labels, values, color=['green', 'red'])
+    plt.title(title)
+    plt.show()
 
 #helper functions
 def remove_stop_words_from_2d_array(arr):
@@ -43,6 +65,7 @@ def filter_2d_arr(arr):
     return arr
 
 
+    
 
 # Open the CSV file for reading
 with open('imdb.csv', 'r', encoding='utf-8') as csvfile:
@@ -80,7 +103,7 @@ for word, freq in word_freq.most_common(10):
     print(f"{word}: {freq} times")
 
 
-#removes the positive or negative tag from the test data
+#removes the positive or negative tag from the test and train data
 x_test = []
 y_test = []
 for x in range (len(test_data)):
@@ -100,18 +123,26 @@ y_test = [x[-1] for x in test_data]
 x_train = [' '.join(x) for x in training_data]
 y_train = [x[-1] for x in training_data]
 
+
 vectorizer = TfidfVectorizer()
 x_train_tfidf = vectorizer.fit_transform(x_train)
 x_test_tfidf = vectorizer.transform(x_test)
 
-model = MultinomialNB()
+#create Support Vector Classification model and fit on training data
+model = LinearSVC()
 model.fit(x_train_tfidf, y_train)
 
-
+#use model to make prediction using test data
+#takes x test data and predicts y test data
 y_pred = model.predict(x_test_tfidf)
 accuracy = accuracy_score(y_test, y_pred)
+
+#output accuracy
 print("Accuracy:", accuracy)
 
+#output graph
+print("Outputting graph comparison")
+compare_arrays(y_test, y_pred,'variance between model prediction and actual data')
 
 
 
